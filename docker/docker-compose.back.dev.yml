@@ -1,4 +1,4 @@
-name: ParissPortif
+name: paris-sportif
 services:
   api-gateway:
     container_name: api-gateway
@@ -17,7 +17,7 @@ services:
     depends_on:
       - auth-service
     networks:
-      - goosee_net
+      - paris-sportif_net
 
   auth-service:
     container_name: auth-service
@@ -45,7 +45,7 @@ services:
       retries: 10
       start_period: 5s
     networks:
-      - goosee_net
+      - paris-sportif_net
 
   auth-db:
     image: postgres:16-alpine
@@ -65,10 +65,10 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - goosee_net
+      - paris-sportif_net
 
 volumes:
   auth_db_data:
 networks:
-  goosee_net:
+  paris-sportif_net:
     driver: bridge
