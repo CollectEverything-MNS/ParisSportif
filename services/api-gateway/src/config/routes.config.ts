@@ -1,5 +1,6 @@
 const authBasePath = '/auth';
 const matchsBasePath = '/matchs';
+const calendarBasePath = '/calendar';
 
 export const routesConfig = {
   auth: {
@@ -34,6 +35,9 @@ export const routesConfig = {
         link: (serviceUrl: string) => `${serviceUrl}${authBasePath}/refresh-token`,
       },
     },
+  },
+  calendar: {
+    root: calendarBasePath,
   },
   match: {
     root: {
