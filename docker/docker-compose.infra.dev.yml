@@ -7,9 +7,9 @@ services:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_UI_PORT}:15672"
     networks:
-      - goosee_net
+      - paris-sportif_net
 
 networks:
-  goosee_net:
-    name: goosee_net
+  paris-sportif_net:
+    name: paris-sportif_net
     driver: bridge

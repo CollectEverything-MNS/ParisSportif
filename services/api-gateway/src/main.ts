@@ -17,8 +17,8 @@ async function bootstrap() {
     app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
 
     const config = new DocumentBuilder()
-      .setTitle(`Projet Goosee Generator - ${nodeEnv}`)
-      .setDescription('API Gateway pour le projet Goosee Generator')
+      .setTitle(`Projet Paris sportif - ${nodeEnv}`)
+      .setDescription('API Gateway pour le projet Paris sportif')
       .setVersion('1.0')
       .addTag('User', 'Gestion des utilisateurs')
       .build();
@@ -33,8 +33,8 @@ async function bootstrap() {
 
   const logger = new Logger('Bootstrap');
   logger.log('=================================================');
-  logger.log(`🚀 API Gateway running in ${nodeEnv.toUpperCase()} mode`);
-  logger.log(`🌐 HTTP: http://localhost:${port}`);
+  logger.log(`API Gateway running in ${nodeEnv.toUpperCase()} mode`);
+  logger.log(`HTTP: http://localhost:${port}`);
   logger.log('=================================================');
 }
 
