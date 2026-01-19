@@ -1,0 +1,17 @@
+import { Body, Controller, Post, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ForgetPasswordRequestService } from './forget-password-request.service';
+import { ForgetPasswordRequestDto } from './forget-password-request.dto';
+import { routesConfig } from '../../../../config/routes.config';
+
+@ApiTags('Auth')
+@Controller()
+export class ForgetPasswordRequestController {
+  constructor(private readonly loginService: ForgetPasswordRequestService) {}
+
+  @Put(routesConfig.auth.forgetPasswordRequest.path)
+  @ApiOperation({ summary: 'Mot de passe oublié demande' })
+  async forgetPasswordRequest(@Body() dto: ForgetPasswordRequestDto) {
+    return this.loginService.execute(dto);
+  }
+}

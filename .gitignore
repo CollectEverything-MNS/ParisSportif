@@ -1,0 +1,35 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.prod
+.claude/
+CLAUDE.md
+# Build files
+dist/
+build/
+.next/
+out/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Dependency directories
+bower_components/

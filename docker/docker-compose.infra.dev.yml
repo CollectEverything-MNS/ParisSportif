@@ -1,0 +1,15 @@
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_UI_PORT}:15672"
+    networks:
+      - goosee_net
+
+networks:
+  goosee_net:
+    name: goosee_net
+    driver: bridge

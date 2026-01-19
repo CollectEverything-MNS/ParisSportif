@@ -1,0 +1,74 @@
+name: ParissPortif
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ../
+      dockerfile: services/api-gateway/Dockerfile
+    command: node dist/main.js
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    environment:
+      AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      NODE_ENV: ${NODE_ENV}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      USER_SERVICE_HOST: ${USER_SERVICE_HOST}
+    depends_on:
+      - auth-service
+    networks:
+      - goosee_net
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../
+      dockerfile: services/auth-service/Dockerfile
+    command: node dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      AUTH_DB_HOST: ${AUTH_DB_HOST}
+      AUTH_DB_PORT: ${AUTH_DB_PORT}
+      AUTH_DB_USER: ${AUTH_DB_USER}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD}
+      AUTH_DB_NAME: ${AUTH_DB_NAME}
+    expose:
+      - "${AUTH_SERVICE_PORT}"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost ${AUTH_SERVICE_PORT}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - goosee_net
+
+  auth-db:
+    image: postgres:16-alpine
+    container_name: auth-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    expose:
+      - "${AUTH_DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER} -d ${AUTH_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - goosee_net
+
+volumes:
+  auth_db_data:
+networks:
+  goosee_net:
+    driver: bridge
