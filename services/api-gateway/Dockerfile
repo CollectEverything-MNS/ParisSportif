@@ -2,6 +2,7 @@ FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
+
 COPY services/api-gateway ./services/api-gateway
 
 RUN yarn install --frozen-lockfile

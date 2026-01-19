@@ -5,7 +5,7 @@ services:
     build:
       context: ../
       dockerfile: services/api-gateway/Dockerfile
-    command: node dist/main.js
+    command: node services/api-gateway/dist/main.js
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     environment:
@@ -24,7 +24,7 @@ services:
     build:
       context: ../
       dockerfile: services/auth-service/Dockerfile
-    command: node dist/main.js
+    command: node services/auth-service/dist/main.js
     environment:
       NODE_ENV: ${NODE_ENV}
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
