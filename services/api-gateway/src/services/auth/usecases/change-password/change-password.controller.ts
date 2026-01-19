@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Put } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChangePasswordService } from './change-password.service';
 import { ChangePasswordDto } from './change-password.dto';
 import { routesConfig } from '../../../../config/routes.config';
