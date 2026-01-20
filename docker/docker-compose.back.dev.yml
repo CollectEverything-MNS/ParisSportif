@@ -9,13 +9,19 @@ services:
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     environment:
+      NODE_ENV: ${NODE_ENV}
       AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
-      NODE_ENV: ${NODE_ENV}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       USER_SERVICE_HOST: ${USER_SERVICE_HOST}
+      CALENDAR_SERVICE_HOST: ${CALENDAR_SERVICE_HOST}
+      CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
+      MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
+      MATCH_SERVICE_HOST: ${MATCH_SERVICE_HOST}
     depends_on:
       - auth-service
+      - calendar-service
+      - match-service
     networks:
       - paris-sportif_net
 
@@ -47,6 +53,35 @@ services:
     networks:
       - paris-sportif_net
 
+  match-service:
+    container_name: match-service
+    build:
+      context: ../
+      dockerfile: services/match-service/Dockerfile
+    command: node services/match-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
+      MATCH_DB_HOST: ${MATCH_DB_HOST}
+      MATCH_DB_PORT: ${MATCH_DB_PORT}
+      MATCH_DB_USER: ${MATCH_DB_USER}
+      MATCH_DB_PASSWORD: ${MATCH_DB_PASSWORD}
+      MATCH_DB_NAME: ${MATCH_DB_NAME}
+    expose:
+      - "${MATCH_SERVICE_PORT}"
+    depends_on:
+      match-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost ${MATCH_SERVICE_PORT}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
+
+
   auth-db:
     image: postgres:16-alpine
     container_name: auth-db
@@ -67,8 +102,79 @@ services:
     networks:
       - paris-sportif_net
 
+  match-db:
+    image: postgres:16-alpine
+    container_name: match-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${MATCH_DB_USER}
+      POSTGRES_PASSWORD: ${MATCH_DB_PASSWORD}
+      POSTGRES_DB: ${MATCH_DB_NAME}
+    volumes:
+      - match_db_data:/var/lib/postgresql/data
+    expose:
+      - "${MATCH_DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MATCH_DB_USER} -d ${MATCH_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - paris-sportif_net
+
+  calendar-service:
+    container_name: calendar-service
+    build:
+      context: ../
+      dockerfile: services/calendar-service/Dockerfile
+    command: node services/calendar-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
+      CALENDAR_DB_HOST: ${CALENDAR_DB_HOST}
+      CALENDAR_DB_PORT: ${CALENDAR_DB_PORT}
+      CALENDAR_DB_USER: ${CALENDAR_DB_USER}
+      CALENDAR_DB_PASSWORD: ${CALENDAR_DB_PASSWORD}
+      CALENDAR_DB_NAME: ${CALENDAR_DB_NAME}
+    expose:
+      - "${CALENDAR_SERVICE_PORT}"
+    depends_on:
+      calendar-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost ${CALENDAR_SERVICE_PORT}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
+
+  calendar-db:
+    image: postgres:16-alpine
+    container_name: calendar-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${CALENDAR_DB_USER}
+      POSTGRES_PASSWORD: ${CALENDAR_DB_PASSWORD}
+      POSTGRES_DB: ${CALENDAR_DB_NAME}
+    volumes:
+      - calendar_db_data:/var/lib/postgresql/data
+    expose:
+      - "${CALENDAR_DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CALENDAR_DB_USER} -d ${CALENDAR_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - paris-sportif_net
+
 volumes:
   auth_db_data:
+  calendar_db_data:
+  match_db_data:
+
 networks:
   paris-sportif_net:
     driver: bridge
