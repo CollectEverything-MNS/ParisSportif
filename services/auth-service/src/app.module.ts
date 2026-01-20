@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Auth } from './entities/auth.entity';
 import { AuthToken } from './entities/auth-token.entity';
 import { IAuthRepository } from './repositories/auth.repository';
@@ -42,6 +43,9 @@ import { ForgetPasswordConfirmUseCase } from './usecases/forget-password-confirm
       }),
     }),
     TypeOrmModule.forFeature([Auth, AuthToken]),
+    ClientsModule.registerAsync([
+      { name: 'RMQ_CLIENT', useFactory: (cfg: ConfigService) => ({ transport: Transport.RMQ, options: { urls: [cfg.get<string>('RABBITMQ_URL')!], queue: 'auth_events', queueOptions: { durable: true } } }), inject: [ConfigService] }
+    ]),
   ],
   controllers: [
     RegisterController,
