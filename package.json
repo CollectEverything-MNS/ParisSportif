@@ -3,7 +3,8 @@
     "private": true,
     "scripts": {
         "install:project": "./scripts/install-project.sh",
-        "start": "yarn install:project && docker compose --env-file env/.env.dev -f docker/docker-compose.infra.dev.yml -f docker/docker-compose.back.dev.yml up --build",
+        "start:build": "yarn install:project && docker compose --env-file env/.env.dev -f docker/docker-compose.infra.dev.yml -f docker/docker-compose.back.dev.yml up --build",
+        "start": "yarn install:project && docker compose --env-file env/.env.dev -f docker/docker-compose.infra.dev.yml -f docker/docker-compose.back.dev.yml up",
         "stop": "docker compose --env-file env/.env.dev -f docker/docker-compose.infra.dev.yml -f docker/docker-compose.back.dev.yml down",
         "restart": "yarn stop && yarn start",
         "prepare": "husky install"
