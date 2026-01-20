@@ -1,6 +1,7 @@
 const authBasePath = '/auth';
 const matchsBasePath = '/matchs';
 const calendarBasePath = '/calendar';
+const oddsBasePath = '/odds';
 
 export const routesConfig = {
   auth: {
@@ -43,6 +44,13 @@ export const routesConfig = {
     root: {
       path: matchsBasePath,
       link: (serviceUrl: string) => `${serviceUrl}${matchsBasePath}`,
+    },
+  },
+  odds: {
+    root: oddsBasePath,
+    create: {
+      path: `${oddsBasePath}`,
+      link: (serviceUrl: string) => `${serviceUrl}${oddsBasePath}`,
     },
   },
 };

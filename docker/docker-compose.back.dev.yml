@@ -5,7 +5,7 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - "${ADMINER_PORT}:8080"
+      - '${ADMINER_PORT}:8080'
     networks:
       - paris-sportif_net
 
@@ -16,7 +16,7 @@ services:
       dockerfile: services/api-gateway/Dockerfile
     command: node services/api-gateway/dist/main.js
     ports:
-      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+      - '${API_GATEWAY_PORT}:${API_GATEWAY_PORT}'
     environment:
       NODE_ENV: ${NODE_ENV}
       AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
@@ -27,10 +27,13 @@ services:
       CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
       MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       MATCH_SERVICE_HOST: ${MATCH_SERVICE_HOST}
+      ODDS_SERVICE_HOST: ${ODDS_SERVICE_HOST}
+      ODDS_SERVICE_PORT: ${ODDS_SERVICE_PORT}
     depends_on:
       - auth-service
       - calendar-service
       - match-service
+      - odds-service
     networks:
       - paris-sportif_net
 
@@ -50,12 +53,12 @@ services:
       AUTH_DB_NAME: ${AUTH_DB_NAME}
       RABBITMQ_URL: ${RABBITMQ_URL}
     expose:
-      - "${AUTH_SERVICE_PORT}"
+      - '${AUTH_SERVICE_PORT}'
     depends_on:
       auth-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost ${AUTH_SERVICE_PORT}"]
+      test: ['CMD-SHELL', 'nc -z localhost ${AUTH_SERVICE_PORT}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -78,12 +81,40 @@ services:
       MATCH_DB_PASSWORD: ${MATCH_DB_PASSWORD}
       MATCH_DB_NAME: ${MATCH_DB_NAME}
     expose:
-      - "${MATCH_SERVICE_PORT}"
+      - '${MATCH_SERVICE_PORT}'
     depends_on:
       match-db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "nc -z localhost ${MATCH_SERVICE_PORT}" ]
+      test: ['CMD-SHELL', 'nc -z localhost ${MATCH_SERVICE_PORT}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
+
+  odds-service:
+    container_name: odds-service
+    build:
+      context: ../
+      dockerfile: services/odds-service/Dockerfile
+    command: node services/odds-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      ODDS_SERVICE_PORT: ${ODDS_SERVICE_PORT}
+      ODDS_DB_HOST: ${ODDS_DB_HOST}
+      ODDS_DB_PORT: ${ODDS_DB_PORT}
+      ODDS_DB_USER: ${ODDS_DB_USER}
+      ODDS_DB_PASSWORD: ${ODDS_DB_PASSWORD}
+      ODDS_DB_NAME: ${ODDS_DB_NAME}
+    expose:
+      - '${ODDS_SERVICE_PORT}'
+    depends_on:
+      odds-db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'nc -z localhost ${ODDS_SERVICE_PORT}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -125,19 +156,18 @@ services:
       CALENDAR_DB_PASSWORD: ${CALENDAR_DB_PASSWORD}
       CALENDAR_DB_NAME: ${CALENDAR_DB_NAME}
     expose:
-      - "${CALENDAR_SERVICE_PORT}"
+      - '${CALENDAR_SERVICE_PORT}'
     depends_on:
       calendar-db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "nc -z localhost ${CALENDAR_SERVICE_PORT}" ]
+      test: ['CMD-SHELL', 'nc -z localhost ${CALENDAR_SERVICE_PORT}']
       interval: 5s
       timeout: 3s
       retries: 10
       start_period: 5s
     networks:
       - paris-sportif_net
-
 
   auth-db:
     image: postgres:16-alpine
@@ -150,9 +180,9 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     expose:
-      - "${AUTH_DB_PORT}"
+      - '${AUTH_DB_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER} -d ${AUTH_DB_NAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${AUTH_DB_USER} -d ${AUTH_DB_NAME}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -170,9 +200,9 @@ services:
     volumes:
       - match_db_data:/var/lib/postgresql/data
     expose:
-      - "${MATCH_DB_PORT}"
+      - '${MATCH_DB_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${MATCH_DB_USER} -d ${MATCH_DB_NAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${MATCH_DB_USER} -d ${MATCH_DB_NAME}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -190,9 +220,29 @@ services:
     volumes:
       - calendar_db_data:/var/lib/postgresql/data
     expose:
-      - "${CALENDAR_DB_PORT}"
+      - '${CALENDAR_DB_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${CALENDAR_DB_USER} -d ${CALENDAR_DB_NAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${CALENDAR_DB_USER} -d ${CALENDAR_DB_NAME}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - paris-sportif_net
+
+  odds-db:
+    image: postgres:16-alpine
+    container_name: odds-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${ODDS_DB_USER}
+      POSTGRES_PASSWORD: ${ODDS_DB_PASSWORD}
+      POSTGRES_DB: ${ODDS_DB_NAME}
+    volumes:
+      - odds_db_data:/var/lib/postgresql/data
+    expose:
+      - '${ODDS_DB_PORT}'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${ODDS_DB_USER} -d ${ODDS_DB_NAME}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -203,6 +253,7 @@ volumes:
   auth_db_data:
   calendar_db_data:
   match_db_data:
+  odds_db_data:
 
 networks:
   paris-sportif_net:
