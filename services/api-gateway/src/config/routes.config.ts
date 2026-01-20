@@ -1,6 +1,7 @@
 const authBasePath = '/auth';
 const matchsBasePath = '/matchs';
 const calendarBasePath = '/calendar';
+const usersBasePath = '/users'
 
 export const routesConfig = {
   auth: {
@@ -36,6 +37,39 @@ export const routesConfig = {
       },
     },
   },
+
+  user: {
+    createUser: {
+      path: `${usersBasePath}/create-user`,
+      link: (serviceUrl: string) => `${serviceUrl}${usersBasePath}/create-user`,
+    },
+
+    getUser: {
+    path: `${usersBasePath}/get-user/:id`,
+    link: (serviceUrl: string, id: string) => `${serviceUrl}/users/${id}`,
+    },
+
+    getUsers: {
+    path: `${usersBasePath}/get-users`,
+    link: (serviceUrl: string) => `${serviceUrl}/users`,
+    },
+
+    updateUser: {
+      path: `${usersBasePath}/update-user/:id`,
+      link: (serviceUrl: string, id: string) =>
+        `${serviceUrl}/users/${id}`,
+    },
+
+    deleteUser: {
+    path: `${usersBasePath}/delete-user/:id`,
+    link: (serviceUrl: string, id: string) =>
+      `${serviceUrl}/users/${id}`,
+    }
+  },
+
+
+  
+
   calendar: {
     root: calendarBasePath,
   },
