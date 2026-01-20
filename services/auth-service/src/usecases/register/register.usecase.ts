@@ -1,13 +1,17 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { ConflictException, Injectable, Inject } from '@nestjs/common';
 import { Auth } from '../../entities/auth.entity';
 import { IAuthRepository } from '../../repositories/auth.repository';
 import { RegisterDto, RegisterResponseDto } from './register.dto';
 import { hashPassword } from '../../shared/utils';
+import { ClientProxy } from '@nestjs/microservices';
+import {lastValueFrom} from "rxjs";
 
 @Injectable()
 export class RegisterUseCase {
-  constructor(private readonly authRepo: IAuthRepository) {}
+  constructor(
+    private readonly authRepo: IAuthRepository,
+    @Inject('RMQ_CLIENT') private rmq: ClientProxy
+  ) {}
 
   async execute(dto: RegisterDto): Promise<RegisterResponseDto> {
     const existingAuth = await this.authRepo.findByEmail(dto.email);
@@ -24,6 +28,13 @@ export class RegisterUseCase {
     });
 
     const savedAuth = await this.authRepo.save(auth);
+
+    await lastValueFrom(
+      this.rmq.emit('auth.registered', {
+        authId: savedAuth.id,
+        email: savedAuth.email,
+      })
+    );
 
     return {
       id: savedAuth.id,
