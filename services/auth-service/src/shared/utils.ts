@@ -1,5 +1,5 @@
-import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
-export  const hashPassword = (password: string): string => {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
+export const hashPassword = (password: string): string => {
+  return bcrypt.hash(password, 12);
+};

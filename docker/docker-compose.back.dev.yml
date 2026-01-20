@@ -25,6 +25,15 @@ services:
     networks:
       - paris-sportif_net
 
+  adminer-service:
+    container_name: adminer-service
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT}:8080"
+    networks:
+      - paris-sportif_net
+
   auth-service:
     container_name: auth-service
     build:
@@ -41,6 +50,7 @@ services:
       AUTH_DB_NAME: ${AUTH_DB_NAME}
     expose:
       - "${AUTH_SERVICE_PORT}"
+
     depends_on:
       auth-db:
         condition: service_healthy
@@ -81,6 +91,52 @@ services:
     networks:
       - paris-sportif_net
 
+  notifier-service:
+    container_name: notifier-service
+    build:
+      context: ../
+      dockerfile: services/notifier-service/Dockerfile
+    command: node services/notifier-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+    restart: unless-stopped
+    networks:
+      - paris-sportif_net
+
+  calendar-service:
+    container_name: calendar-service
+    build:
+      context: ../
+      dockerfile: services/calendar-service/Dockerfile
+    command: node services/calendar-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
+      CALENDAR_DB_HOST: ${CALENDAR_DB_HOST}
+      CALENDAR_DB_PORT: ${CALENDAR_DB_PORT}
+      CALENDAR_DB_USER: ${CALENDAR_DB_USER}
+      CALENDAR_DB_PASSWORD: ${CALENDAR_DB_PASSWORD}
+      CALENDAR_DB_NAME: ${CALENDAR_DB_NAME}
+    expose:
+      - "${CALENDAR_SERVICE_PORT}"
+    depends_on:
+      calendar-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost ${CALENDAR_SERVICE_PORT}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
 
   auth-db:
     image: postgres:16-alpine
@@ -122,34 +178,6 @@ services:
     networks:
       - paris-sportif_net
 
-  calendar-service:
-    container_name: calendar-service
-    build:
-      context: ../
-      dockerfile: services/calendar-service/Dockerfile
-    command: node services/calendar-service/dist/main.js
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
-      CALENDAR_DB_HOST: ${CALENDAR_DB_HOST}
-      CALENDAR_DB_PORT: ${CALENDAR_DB_PORT}
-      CALENDAR_DB_USER: ${CALENDAR_DB_USER}
-      CALENDAR_DB_PASSWORD: ${CALENDAR_DB_PASSWORD}
-      CALENDAR_DB_NAME: ${CALENDAR_DB_NAME}
-    expose:
-      - "${CALENDAR_SERVICE_PORT}"
-    depends_on:
-      calendar-db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost ${CALENDAR_SERVICE_PORT}"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 5s
-    networks:
-      - paris-sportif_net
-
   calendar-db:
     image: postgres:16-alpine
     container_name: calendar-db
@@ -177,4 +205,5 @@ volumes:
 
 networks:
   paris-sportif_net:
-    driver: bridge
+    external: true
+    name: paris-sportif_net
