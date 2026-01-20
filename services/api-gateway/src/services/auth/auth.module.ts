@@ -15,11 +15,37 @@ import { ForgetPasswordRequestService } from './usecases/forget-password-request
 import { ForgetPasswordConfirmService } from './usecases/forget-password-confirm/forget-password-confirm.service';
 import { ForgetPasswordRequestController } from './usecases/forget-password-request/forget-password-request.controller';
 import { ForgetPasswordConfirmController } from './usecases/forget-password-confirm/forget-password-confirm.controller';
+import { HttpProxyService } from '../../shared/services/http-proxy.service';
 
 @Module({
   imports: [ConfigModule, HttpModule],
-  controllers: [LoginController, RegisterController, RevokeTokenController, RefreshTokenController, ChangePasswordController, ForgetPasswordRequestController, ForgetPasswordConfirmController],
-  providers: [LoginService, RegisterService, RevokeTokenService, RefreshTokenService, ChangePasswordService, ForgetPasswordRequestService, ForgetPasswordConfirmService],
-  exports: [LoginService, RegisterService, RevokeTokenService, RefreshTokenService, ChangePasswordService, ForgetPasswordRequestService, ForgetPasswordConfirmService],
+  controllers: [
+    LoginController,
+    RegisterController,
+    RevokeTokenController,
+    RefreshTokenController,
+    ChangePasswordController,
+    ForgetPasswordRequestController,
+    ForgetPasswordConfirmController,
+  ],
+  providers: [
+    HttpProxyService,
+    LoginService,
+    RegisterService,
+    RevokeTokenService,
+    RefreshTokenService,
+    ChangePasswordService,
+    ForgetPasswordRequestService,
+    ForgetPasswordConfirmService,
+  ],
+  exports: [
+    LoginService,
+    RegisterService,
+    RevokeTokenService,
+    RefreshTokenService,
+    ChangePasswordService,
+    ForgetPasswordRequestService,
+    ForgetPasswordConfirmService,
+  ],
 })
 export class AuthModule {}

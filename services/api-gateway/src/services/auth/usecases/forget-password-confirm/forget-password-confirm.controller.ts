@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Put } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { routesConfig } from '../../../../config/routes.config';
 import { ForgetPasswordConfirmDto } from './forget-password-confirm.dto';
 import { ForgetPasswordConfirmService } from './forget-password-confirm.service';
