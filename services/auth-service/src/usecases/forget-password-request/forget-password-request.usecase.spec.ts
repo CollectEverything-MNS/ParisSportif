@@ -40,9 +40,7 @@ describe('ForgetPasswordRequestUseCase', () => {
       ],
     }).compile();
 
-    usecase = module.get<ForgetPasswordRequestUseCase>(
-      ForgetPasswordRequestUseCase,
-    );
+    usecase = module.get<ForgetPasswordRequestUseCase>(ForgetPasswordRequestUseCase);
     authRepo = module.get(IAuthRepository);
     tokenRepo = module.get(IAuthTokenRepository);
 
@@ -75,7 +73,9 @@ describe('ForgetPasswordRequestUseCase', () => {
 
       expect(authRepo.findByEmail).toHaveBeenCalledWith(email);
       expect(tokenRepo.save).toHaveBeenCalled();
-      expect(result).toEqual({ message: 'OTP sent to email' });
+      expect(result).toEqual({
+        message: 'OTP sent to email (Regarder dans RABBITMQ dans les message dans le queue)',
+      });
     });
 
     it("devrait bloquer si l'utilisateur existe pas", async () => {
@@ -97,11 +97,11 @@ describe('ForgetPasswordRequestUseCase', () => {
         expect.objectContaining({
           authId: mockAuth.id,
           token: expect.stringMatching(/^OTP_\d{6}$/),
-        }),
+        })
       );
     });
 
-    it("devrait faire expirer le token après 10 minutes", async () => {
+    it('devrait faire expirer le token après 10 minutes', async () => {
       authRepo.findByEmail.mockResolvedValue(mockAuth);
       tokenRepo.save.mockResolvedValue({} as AuthToken);
 
@@ -115,7 +115,7 @@ describe('ForgetPasswordRequestUseCase', () => {
       expect(tokenRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({
           expiredAt: expect.any(Date),
-        }),
+        })
       );
 
       const savedToken = tokenRepo.save.mock.calls[0][0];
@@ -134,7 +134,7 @@ describe('ForgetPasswordRequestUseCase', () => {
       expect(tokenRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({
           authId: mockAuth.id,
-        }),
+        })
       );
     });
 
@@ -146,7 +146,7 @@ describe('ForgetPasswordRequestUseCase', () => {
       await usecase.execute(email);
 
       expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/OTP \d{6} - email test@example\.com/),
+        expect.stringMatching(/OTP \d{6} - email test@example\.com/)
       );
     });
 

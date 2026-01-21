@@ -27,6 +27,8 @@ export class EmailService implements INotificationService {
         ? email.to.join(', ')
         : email.to;
 
+      this.logger.log(`JE SUIS DANS LE SERVICE NOTIFIER, RABBIT MQ FONCTIONNE`);
+
       const info = await this.transporter.sendMail({
         from: email.from || this.config.get('SMTP_FROM'),
         to: recipients,

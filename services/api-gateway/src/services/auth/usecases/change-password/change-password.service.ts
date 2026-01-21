@@ -18,6 +18,6 @@ export class ChangePasswordService {
 
   async execute(dto: ChangePasswordDto) {
     const url = routesConfig.auth.changePassword.link(this.services.auth);
-    return this.httpProxy.post(url, dto, 'Change password failed');
+    return this.httpProxy.put(url, dto, 'Change password failed');
   }
 }

@@ -44,7 +44,18 @@ import { ForgetPasswordConfirmUseCase } from './usecases/forget-password-confirm
     }),
     TypeOrmModule.forFeature([Auth, AuthToken]),
     ClientsModule.registerAsync([
-      { name: 'RMQ_CLIENT', useFactory: (cfg: ConfigService) => ({ transport: Transport.RMQ, options: { urls: [cfg.get<string>('RABBITMQ_URL')!], queue: 'auth_events', queueOptions: { durable: true } } }), inject: [ConfigService] }
+      {
+        name: 'RMQ_CLIENT',
+        useFactory: (cfg: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [cfg.get<string>('RABBITMQ_URL')!],
+            queue: 'auth_events',
+            queueOptions: { durable: true },
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [
@@ -71,7 +82,7 @@ import { ForgetPasswordConfirmUseCase } from './usecases/forget-password-confirm
     RefreshTokenUseCase,
     ChangePasswordUseCase,
     ForgetPasswordRequestUseCase,
-    ForgetPasswordConfirmUseCase
+    ForgetPasswordConfirmUseCase,
   ],
 })
 export class AppModule {}

@@ -1,10 +1,10 @@
-import { ConflictException, Injectable, Inject } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { Auth } from '../../entities/auth.entity';
 import { IAuthRepository } from '../../repositories/auth.repository';
 import { RegisterDto, RegisterResponseDto } from './register.dto';
 import { hashPassword } from '../../shared/utils';
 import { ClientProxy } from '@nestjs/microservices';
-import {lastValueFrom} from "rxjs";
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class RegisterUseCase {
@@ -20,7 +20,7 @@ export class RegisterUseCase {
       throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = hashPassword(dto.password);
+    const hashedPassword = await hashPassword(dto.password);
 
     const auth = new Auth({
       email: dto.email,

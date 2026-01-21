@@ -1,18 +1,14 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import * as crypto from 'crypto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { IAuthRepository } from '../../repositories/auth.repository';
 import { IAuthTokenRepository } from '../../repositories/auth-token.repository';
 import { ForgetPasswordConfirmDto } from './forget-password-confirm.dto';
+import { hashPassword } from '../../shared/utils';
 
 @Injectable()
 export class ForgetPasswordConfirmUseCase {
   constructor(
     private readonly authRepo: IAuthRepository,
-    private readonly tokenRepo: IAuthTokenRepository,
+    private readonly tokenRepo: IAuthTokenRepository
   ) {}
 
   async execute(dto: ForgetPasswordConfirmDto) {
@@ -34,7 +30,7 @@ export class ForgetPasswordConfirmUseCase {
       throw new BadRequestException('OTP expired');
     }
 
-    auth.password = this.hashPassword(dto.newPassword);
+    auth.password = await hashPassword(dto.newPassword);
     await this.authRepo.save(auth);
 
     await this.tokenRepo.deleteByToken(tokenValue);
@@ -42,9 +38,5 @@ export class ForgetPasswordConfirmUseCase {
     return {
       message: 'Password reset successfully',
     };
-  }
-
-  private hashPassword(password: string): string {
-    return crypto.createHash('sha256').update(password).digest('hex');
   }
 }

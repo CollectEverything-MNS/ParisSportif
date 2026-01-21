@@ -1,7 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 import { IAuthRepository } from '../../repositories/auth.repository';
 import { IAuthTokenRepository } from '../../repositories/auth-token.repository';
 import { AuthToken } from '../../entities/auth-token.entity';
@@ -11,6 +10,7 @@ export class ForgetPasswordRequestUseCase {
   constructor(
     private readonly authRepo: IAuthRepository,
     private readonly tokenRepo: IAuthTokenRepository,
+    @Inject('RMQ_CLIENT') private rmq: ClientProxy
   ) {}
 
   async execute(email: string) {
@@ -27,14 +27,22 @@ export class ForgetPasswordRequestUseCase {
         authId: auth.id,
         token: `OTP_${otp}`,
         expiredAt: new Date(Date.now() + 1000 * 60 * 10), // 10 min
-      }),
+      })
     );
 
-    // envoie du code par email
-    console.log(`OTP ${otp} - email ${email}`);
+    await lastValueFrom(
+      this.rmq.emit('send_notification', {
+        type: 'EMAIL',
+        data: {
+          to: email,
+          subject: 'Code de réinitialisation de mot de passe',
+          html: `<p>Votre code de réinitialisation de mot de passe est : <b>${otp}</b></p><p>Ce code est valide pendant 10 minutes.</p>`,
+        },
+      })
+    );
 
     return {
-      message: 'OTP sent to email',
+      message: 'OTP sent to email (Regarder dans RABBITMQ dans les message dans le queue)',
     };
   }
 }
