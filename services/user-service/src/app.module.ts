@@ -7,18 +7,16 @@ import { User } from './entities/user.entity';
 import { IUserRepository } from './repositories/user.repository';
 import { TypeOrmUserRepository } from './repositories/implements/user.impl.repository';
 
-
 import { CreateUserController } from './usecases/create-user/create-user.controller';
 import { DeleteUserController } from './usecases/delete-user/delete-user.controller';
 import { GetUserController } from './usecases/get-user/get-user.controller';
-import { GetUsersController } from './usecases/get-users/get-users.controller';
+import { ListUsersController } from './usecases/list-users/list-users.controller';
 import { UpdateUserController } from './usecases/update-user/update-user.controller';
-
 
 import { CreateUserUseCase } from './usecases/create-user/create-user.usecase';
 import { DeleteUserUseCase } from './usecases/delete-user/delete-user.usecase';
 import { GetUserUseCase } from './usecases/get-user/get-user.usecase';
-import { GetUsersUseCase } from './usecases/get-users/get-users.usecase';
+import { ListUsersUsecase } from './usecases/list-users/list-users.usecase';
 import { UpdateUserUseCase } from './usecases/update-user/update-user.usecase';
 
 @Module({
@@ -48,7 +46,7 @@ import { UpdateUserUseCase } from './usecases/update-user/update-user.usecase';
   controllers: [
     CreateUserController,
     GetUserController,
-    GetUsersController,
+    ListUsersController,
     UpdateUserController,
     DeleteUserController,
   ],
@@ -61,7 +59,7 @@ import { UpdateUserUseCase } from './usecases/update-user/update-user.usecase';
 
     CreateUserUseCase,
     GetUserUseCase,
-    GetUsersUseCase,
+    ListUsersUsecase,
     UpdateUserUseCase,
     DeleteUserUseCase,
   ],

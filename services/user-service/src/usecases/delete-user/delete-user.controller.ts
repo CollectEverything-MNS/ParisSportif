@@ -8,7 +8,7 @@ export class DeleteUserController {
   constructor(private readonly deleteUserUseCase: DeleteUserUseCase) {}
 
   @Delete(usersRoutes.user.delete)
-  @ApiOperation({ summary: "Suppression d un utilisateur" })  
+  @ApiOperation({ summary: "Suppression d'un utilisateur" })
   async deleteUser(@Param('id') id: string) {
     return this.deleteUserUseCase.execute(id);
   }

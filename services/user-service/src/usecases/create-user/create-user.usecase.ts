@@ -18,14 +18,11 @@ export class CreateUserUseCase {
     user.email = dto.email;
     user.firstName = dto.firstName;
     user.lastName = dto.lastName;
-
-
     user.phone = dto.phone ?? '';
     user.address = dto.address ?? '';
     user.postaleCode = dto.postaleCode ?? '';
     user.city = dto.city ?? '';
     user.country = dto.country ?? '';
-
     user.role = dto.role?.length ? dto.role : [RoleType.CUSTOMER];
 
     await this.userRepo.save(user);
@@ -35,4 +32,3 @@ export class CreateUserUseCase {
     };
   }
 }
-

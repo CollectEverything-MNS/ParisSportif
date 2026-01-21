@@ -3,7 +3,6 @@ export const usersRoutes = {
   user: {
     create: `/create-user`,
     getOne: `/:id`,
-    getAll: `/`,
     update: `/:id`,
     delete: `/:id`,
   },

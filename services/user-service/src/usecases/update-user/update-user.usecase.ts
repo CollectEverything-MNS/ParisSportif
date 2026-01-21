@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from '../../repositories/user.repository';
 import { UpdateUserDto } from './update-user.dto';
+import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -13,30 +14,30 @@ export class UpdateUserUseCase {
       throw new NotFoundException('User not found');
     }
 
+    const userUpdated: User = {
+      ...user,
+      id: user.id,
+      firstName: dto.firstName ?? user.firstName,
+      lastName: dto.lastName ?? user.lastName,
+      phone: dto.phone ?? user.phone,
+      address: dto.address ?? user.address,
+      postaleCode: dto.postaleCode ?? user.postaleCode,
+      city: dto.city ?? user.city,
+      country: dto.country ?? user.country,
+      role: dto.role ?? user.role,
+      createdAt: user.createdAt,
+      updatedAt: new Date(),
+    };
 
     if (dto.email && dto.email !== user.email) {
       const existing = await this.userRepo.findByEmail(dto.email);
       if (existing) {
         throw new BadRequestException('Email already exists');
       }
-      user.email = dto.email;
+      userUpdated.email = dto.email;
     }
 
-
-    if (dto.firstName !== undefined) user.firstName = dto.firstName;
-    if (dto.lastName !== undefined) user.lastName = dto.lastName;
-
-
-    if (dto.phone !== undefined) user.phone = dto.phone;
-    if (dto.address !== undefined) user.address = dto.address;
-    if (dto.postaleCode !== undefined) user.postaleCode = dto.postaleCode;
-    if (dto.city !== undefined) user.city = dto.city;
-    if (dto.country !== undefined) user.country = dto.country;
-
-
-    if (dto.role !== undefined) user.role = dto.role;
-
-    await this.userRepo.save(user);
+    await this.userRepo.save(userUpdated);
 
     return {
       message: 'User updated successfully',

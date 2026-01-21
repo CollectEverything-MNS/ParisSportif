@@ -93,8 +93,6 @@ services:
     networks:
       - paris-sportif_net
 
-
-
   user-db:
     image: postgres:16-alpine
     container_name: user-db
@@ -114,8 +112,6 @@ services:
       retries: 10
     networks:
       - paris-sportif_net
-
-
 
   match-service:
     container_name: match-service
@@ -191,7 +187,6 @@ services:
       start_period: 5s
     networks:
       - paris-sportif_net
-
 
   auth-db:
     image: postgres:16-alpine

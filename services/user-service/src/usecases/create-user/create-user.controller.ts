@@ -9,9 +9,8 @@ export class CreateUserController {
   constructor(private readonly createUserUseCase: CreateUserUseCase) {}
 
   @Post(usersRoutes.user.create)
-@ApiOperation({ summary: "Creation d un utilisateur" })  
-
-async createUser(@Body() dto: CreateUserDto) {
+  @ApiOperation({ summary: "Creation d'un utilisateur" })
+  async createUser(@Body() dto: CreateUserDto) {
     return this.createUserUseCase.execute(dto);
   }
 }
