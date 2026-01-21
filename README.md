@@ -26,3 +26,12 @@
 ## 3. Accéder à l'application via SWAGGER
 1. Ouvrir votre navigateur web et accéder à l'URL suivante : [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 2. Vous verrez l'interface Swagger où vous pourrez explorer et tester les différentes API disponibles dans l'application.
+
+## 4. Tests du projets
+1. A la racine du mono repo, il y a le fichier bruno 
+2. Concernant le forget password request, je n'ai pas mis le mot de passe dans le .env pour éviter de le partager sur le github. Pour vérifier que ça fonctionne tu peux voir dans Rabbit MQ dans le queue
+
+## Connexion RabbitMQ
+- username: guest
+- password: guest
+- url interface: http://localhost:15672/
