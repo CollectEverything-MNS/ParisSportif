@@ -1,4 +1,5 @@
 name: paris-sportif
+
 services:
   adminer-service:
     container_name: adminer-service
@@ -21,16 +22,17 @@ services:
       NODE_ENV: ${NODE_ENV}
       AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
-      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       USER_SERVICE_HOST: ${USER_SERVICE_HOST}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       CALENDAR_SERVICE_HOST: ${CALENDAR_SERVICE_HOST}
       CALENDAR_SERVICE_PORT: ${CALENDAR_SERVICE_PORT}
-      MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       MATCH_SERVICE_HOST: ${MATCH_SERVICE_HOST}
+      MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       ODDS_SERVICE_HOST: ${ODDS_SERVICE_HOST}
       ODDS_SERVICE_PORT: ${ODDS_SERVICE_PORT}
     depends_on:
       - auth-service
+      - user-service
       - calendar-service
       - match-service
       - odds-service
@@ -59,6 +61,34 @@ services:
         condition: service_healthy
     healthcheck:
       test: ['CMD-SHELL', 'nc -z localhost ${AUTH_SERVICE_PORT}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
+
+  user-service:
+    container_name: user-service
+    build:
+      context: ../
+      dockerfile: services/user-service/Dockerfile
+    command: node services/user-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      USER_DB_HOST: ${USER_DB_HOST}
+      USER_DB_PORT: ${USER_DB_PORT}
+      USER_DB_USER: ${USER_DB_USER}
+      USER_DB_PASSWORD: ${USER_DB_PASSWORD}
+      USER_DB_NAME: ${USER_DB_NAME}
+    expose:
+      - '${USER_SERVICE_PORT}'
+    depends_on:
+      user-db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'nc -z localhost ${USER_SERVICE_PORT}']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -189,6 +219,26 @@ services:
     networks:
       - paris-sportif_net
 
+  user-db:
+    image: postgres:16-alpine
+    container_name: user-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+      POSTGRES_DB: ${USER_DB_NAME}
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    expose:
+      - '${USER_DB_PORT}'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${USER_DB_USER} -d ${USER_DB_NAME}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - paris-sportif_net
+
   match-db:
     image: postgres:16-alpine
     container_name: match-db
@@ -253,6 +303,7 @@ volumes:
   auth_db_data:
   calendar_db_data:
   match_db_data:
+  user_db_data:
   odds_db_data:
 
 networks:
