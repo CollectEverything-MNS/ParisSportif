@@ -18,6 +18,6 @@ export class ForgetPasswordRequestService {
 
   async execute(dto: ForgetPasswordRequestDto) {
     const url = routesConfig.auth.forgetPasswordRequest.link(this.services.auth);
-    return this.httpProxy.post(url, dto, 'Forget password request failed');
+    return this.httpProxy.put(url, dto, 'Forget password request failed');
   }
 }

@@ -4,13 +4,13 @@ import { AuthToken } from '../../entities/auth-token.entity';
 import { IAuthRepository } from '../../repositories/auth.repository';
 import { IAuthTokenRepository } from '../../repositories/auth-token.repository';
 import { LoginDto, LoginResponseDto } from './login.dto';
-import { hashPassword } from '../../shared/utils';
+import { comparePassword } from '../../shared/utils';
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly authRepo: IAuthRepository,
-    private readonly authTokenRepo: IAuthTokenRepository,
+    private readonly authTokenRepo: IAuthTokenRepository
   ) {}
 
   async execute(dto: LoginDto): Promise<LoginResponseDto> {
@@ -20,9 +20,9 @@ export class LoginUseCase {
       throw new UnauthorizedException('User not found');
     }
 
-    const hashedPassword = hashPassword(dto.password);
+    const isValid = await comparePassword(dto.password, auth.password);
 
-    if (auth.password !== hashedPassword) {
+    if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 

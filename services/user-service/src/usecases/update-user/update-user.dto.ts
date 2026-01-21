@@ -9,13 +9,7 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-
-export enum RoleType {
-  OWNER = 'OWNER',
-  SUPERADMIN = 'SUPERADMIN',
-  ADMIN = 'ADMIN',
-  CUSTOMER = 'CUSTOMER',
-}
+import { RoleType } from '../../entities/user.entity';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'user@mail.com' })

@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { routesConfig } from '../../../../config/routes.config';
-import { GetUsersService } from './get-users.service';
+import { ListUsersService } from './list-users.service';
 
 @ApiTags('User')
 @Controller()
-export class GetUsersController {
-  constructor(private readonly getUsersService: GetUsersService) {}
+export class ListUsersController {
+  constructor(private readonly getUsersService: ListUsersService) {}
 
   @Get(routesConfig.user.getUsers.path)
   @ApiOperation({ summary: 'Récupérer la liste des utilisateurs' })

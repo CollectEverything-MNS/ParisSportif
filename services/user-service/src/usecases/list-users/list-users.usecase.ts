@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IUserRepository } from '../../repositories/user.repository';
 
 @Injectable()
-export class GetUsersUseCase {
+export class ListUsersUsecase {
   constructor(private readonly userRepo: IUserRepository) {}
 
   async execute() {

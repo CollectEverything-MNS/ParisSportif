@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-
 export enum RoleType {
   OWNER = 'OWNER',
   SUPERADMIN = 'SUPERADMIN',
@@ -55,5 +54,5 @@ export class User {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt?: Date;
 }

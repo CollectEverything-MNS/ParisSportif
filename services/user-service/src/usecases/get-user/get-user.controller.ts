@@ -8,7 +8,7 @@ export class GetUserController {
   constructor(private readonly getUserUseCase: GetUserUseCase) {}
 
   @Get(usersRoutes.user.getOne)
-  @ApiOperation({ summary: "Fetch un utilisateur" })  
+  @ApiOperation({ summary: 'Get un utilisateur' })
   async getUser(@Param('id') id: string) {
     return this.getUserUseCase.execute(id);
   }

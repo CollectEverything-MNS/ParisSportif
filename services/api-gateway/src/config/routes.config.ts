@@ -1,7 +1,8 @@
 const authBasePath = '/auth';
 const matchsBasePath = '/matchs';
 const calendarBasePath = '/calendar';
-const usersBasePath = '/users'
+const oddsBasePath = '/odds';
+const usersBasePath = '/users';
 
 export const routesConfig = {
   auth: {
@@ -45,30 +46,25 @@ export const routesConfig = {
     },
 
     getUser: {
-    path: `${usersBasePath}/get-user/:id`,
-    link: (serviceUrl: string, id: string) => `${serviceUrl}/users/${id}`,
+      path: `${usersBasePath}/get-user/:id`,
+      link: (serviceUrl: string, id: string) => `${serviceUrl}/users/${id}`,
     },
 
     getUsers: {
-    path: `${usersBasePath}/get-users`,
-    link: (serviceUrl: string) => `${serviceUrl}/users`,
+      path: `${usersBasePath}`,
+      link: (serviceUrl: string) => `${serviceUrl}${usersBasePath}`,
     },
 
     updateUser: {
       path: `${usersBasePath}/update-user/:id`,
-      link: (serviceUrl: string, id: string) =>
-        `${serviceUrl}/users/${id}`,
+      link: (serviceUrl: string, id: string) => `${serviceUrl}/users/${id}`,
     },
 
     deleteUser: {
-    path: `${usersBasePath}/delete-user/:id`,
-    link: (serviceUrl: string, id: string) =>
-      `${serviceUrl}/users/${id}`,
-    }
+      path: `${usersBasePath}/delete-user/:id`,
+      link: (serviceUrl: string, id: string) => `${serviceUrl}/users/${id}`,
+    },
   },
-
-
-  
 
   calendar: {
     root: calendarBasePath,
@@ -77,6 +73,13 @@ export const routesConfig = {
     root: {
       path: matchsBasePath,
       link: (serviceUrl: string) => `${serviceUrl}${matchsBasePath}`,
+    },
+  },
+  odds: {
+    root: oddsBasePath,
+    create: {
+      path: `${oddsBasePath}`,
+      link: (serviceUrl: string) => `${serviceUrl}${oddsBasePath}`,
     },
   },
 };

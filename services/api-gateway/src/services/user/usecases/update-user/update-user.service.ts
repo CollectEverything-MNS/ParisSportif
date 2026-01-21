@@ -11,7 +11,7 @@ export class UpdateUserService {
 
   constructor(
     private readonly httpProxy: HttpProxyService,
-    private readonly config: ConfigService,
+    private readonly config: ConfigService
   ) {
     this.services = serviceUrl(this.config);
   }

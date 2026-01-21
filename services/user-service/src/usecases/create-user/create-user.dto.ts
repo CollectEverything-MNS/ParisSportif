@@ -9,13 +9,7 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-
-export enum RoleType {
-  OWNER = 'OWNER',
-  SUPERADMIN = 'SUPERADMIN',
-  ADMIN = 'ADMIN',
-  CUSTOMER = 'CUSTOMER',
-}
+import { RoleType } from '../../entities/user.entity';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@mail.com' })
@@ -36,7 +30,6 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   @Length(6, 20)
-
   @Matches(/^\+?[0-9\s-]{6,20}$/, { message: 'phone invalide' })
   phone?: string;
 

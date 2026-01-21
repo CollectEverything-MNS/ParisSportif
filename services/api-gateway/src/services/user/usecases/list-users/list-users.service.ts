@@ -5,12 +5,12 @@ import { serviceUrl, ServiceUrls } from '../../../../config/services.config';
 import { routesConfig } from '../../../../config/routes.config';
 
 @Injectable()
-export class GetUsersService {
+export class ListUsersService {
   private readonly services: ServiceUrls;
 
   constructor(
     private readonly httpProxy: HttpProxyService,
-    private readonly config: ConfigService,
+    private readonly config: ConfigService
   ) {
     this.services = serviceUrl(this.config);
   }

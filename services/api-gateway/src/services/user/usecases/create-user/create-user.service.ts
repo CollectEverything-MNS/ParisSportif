@@ -9,7 +9,10 @@ import { CreateUserDto } from './create-user.dto';
 export class CreateUserService {
   private readonly services: ServiceUrls;
 
-  constructor(private readonly httpProxy: HttpProxyService, private readonly config: ConfigService) {
+  constructor(
+    private readonly httpProxy: HttpProxyService,
+    private readonly config: ConfigService
+  ) {
     this.services = serviceUrl(this.config);
   }
 

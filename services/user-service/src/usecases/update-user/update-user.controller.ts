@@ -9,7 +9,7 @@ export class UpdateUserController {
   constructor(private readonly updateUserUseCase: UpdateUserUseCase) {}
 
   @Patch(usersRoutes.user.update)
-  @ApiOperation({ summary: "Modifier un utilisateur" })  
+  @ApiOperation({ summary: "Mise à jour d'un utilisateur" })
   async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.updateUserUseCase.execute(id, dto);
   }
