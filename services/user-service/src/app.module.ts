@@ -18,6 +18,9 @@ import { DeleteUserUseCase } from './usecases/delete-user/delete-user.usecase';
 import { GetUserUseCase } from './usecases/get-user/get-user.usecase';
 import { ListUsersUsecase } from './usecases/list-users/list-users.usecase';
 import { UpdateUserUseCase } from './usecases/update-user/update-user.usecase';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+//import { CreateUserEventsListener } from './usecases/create-user/create-user.events';
+
 
 @Module({
   imports: [
@@ -41,6 +44,22 @@ import { UpdateUserUseCase } from './usecases/update-user/update-user.usecase';
     }),
 
     TypeOrmModule.forFeature([User]),
+
+    ClientsModule.registerAsync([
+    {
+      name: 'RMQ_CLIENT',
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        transport: Transport.RMQ,
+        options: {
+          urls: [cfg.get<string>('RABBITMQ_URL')!],
+          queue: 'user_events',
+          queueOptions: { durable: true },
+        },
+      }),
+    },
+  ]),
+
   ],
 
   controllers: [

@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { IUserRepository } from '../../repositories/user.repository';
 import { UpdateUserDto } from './update-user.dto';
 import { User } from '../../entities/user.entity';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+
 
 @Injectable()
 export class UpdateUserUseCase {
-  constructor(private readonly userRepo: IUserRepository) {}
+  constructor(private readonly userRepo: IUserRepository, @Inject('RMQ_CLIENT') private rmq: ClientProxy) {}
 
   async execute(id: string, dto: UpdateUserDto) {
     const user = await this.userRepo.findById(id);
@@ -38,6 +41,14 @@ export class UpdateUserUseCase {
     }
 
     await this.userRepo.save(userUpdated);
+
+    await lastValueFrom(
+      this.rmq.emit('user.updated', {    
+      email: userUpdated.email,
+      userId: userUpdated.id
+    }),
+  );
+
 
     return {
       message: 'User updated successfully',
