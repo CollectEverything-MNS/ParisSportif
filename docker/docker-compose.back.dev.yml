@@ -30,12 +30,15 @@ services:
       MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       ODDS_SERVICE_HOST: ${ODDS_SERVICE_HOST}
       ODDS_SERVICE_PORT: ${ODDS_SERVICE_PORT}
+      WALLET_SERVICE_HOST: ${WALLET_SERVICE_HOST}
+      WALLET_SERVICE_PORT: ${WALLET_SERVICE_PORT}
     depends_on:
       - auth-service
       - user-service
       - calendar-service
       - match-service
       - odds-service
+      - wallet-service
     networks:
       - paris-sportif_net
 
@@ -199,6 +202,36 @@ services:
     networks:
       - paris-sportif_net
 
+  wallet-service:
+    container_name: wallet-service
+    build:
+      context: ../
+      dockerfile: services/wallet-service/Dockerfile
+    command: node services/wallet-service/dist/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      WALLET_SERVICE_PORT: ${WALLET_SERVICE_PORT}
+      WALLET_DB_HOST: ${WALLET_DB_HOST}
+      WALLET_DB_PORT: ${WALLET_DB_PORT}
+      WALLET_DB_USER: ${WALLET_DB_USER}
+      WALLET_DB_PASSWORD: ${WALLET_DB_PASSWORD}
+      WALLET_DB_NAME: ${WALLET_DB_NAME}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    expose:
+      - "${WALLET_SERVICE_PORT}"
+    depends_on:
+      wallet-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost ${WALLET_SERVICE_PORT}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - paris-sportif_net
+
+
   auth-db:
     image: postgres:16-alpine
     container_name: auth-db
@@ -299,12 +332,33 @@ services:
     networks:
       - paris-sportif_net
 
+  wallet-db:
+    image: postgres:16-alpine
+    container_name: wallet-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${WALLET_DB_USER}
+      POSTGRES_PASSWORD: ${WALLET_DB_PASSWORD}
+      POSTGRES_DB: ${WALLET_DB_NAME}
+    volumes:
+      - wallet_db_data:/var/lib/postgresql/data
+    expose:
+      - "${WALLET_DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${WALLET_DB_USER} -d ${WALLET_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - paris-sportif_net
+
 volumes:
   auth_db_data:
   calendar_db_data:
   match_db_data:
   user_db_data:
   odds_db_data:
+  wallet_db_data:
 
 networks:
   paris-sportif_net:
