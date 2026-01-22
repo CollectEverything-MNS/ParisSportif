@@ -3,6 +3,7 @@ const matchsBasePath = '/matchs';
 const calendarBasePath = '/calendar';
 const oddsBasePath = '/odds';
 const usersBasePath = '/users';
+const walletBasePath = '/wallet';
 
 export const routesConfig = {
   auth: {
@@ -80,6 +81,25 @@ export const routesConfig = {
     create: {
       path: `${oddsBasePath}`,
       link: (serviceUrl: string) => `${serviceUrl}${oddsBasePath}`,
+    },
+  },
+  wallet: {
+    root: walletBasePath,
+    balance: {
+      path: `${walletBasePath}/balance`,
+      link: (serviceUrl: string) => `${serviceUrl}${walletBasePath}/balance`,
+    },
+    deposit: {
+      path: `${walletBasePath}/deposit`,
+      link: (serviceUrl: string) => `${serviceUrl}${walletBasePath}/deposit`,
+    },
+    withdraw: {
+      path: `${walletBasePath}/withdraw`,
+      link: (serviceUrl: string) => `${serviceUrl}${walletBasePath}/withdraw`,
+    },
+    transactions: {
+      path: `${walletBasePath}/transactions`,
+      link: (serviceUrl: string) => `${serviceUrl}${walletBasePath}/transactions`,
     },
   },
 };
